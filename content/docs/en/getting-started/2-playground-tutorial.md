@@ -1,6 +1,6 @@
 ---
 title: Playground Tutorial
-contributors: [ikoevska, rigor789, hines-sharrod]
+contributors: [ikoevska, rigor789, hines-sharrod, funzeye]
 ---
 
 The [NativeScript Playground](https://play.nativescript.org?template=play-vue) is a place in the cloud where you can just play around with NativeScript and Vue.js from your browser until you figure out the basics. Fire the link and start dragging and dropping component code around the place.
@@ -140,7 +140,7 @@ Use the `<TabView>` component to create a two-tab app.
 1. Change the title of the `<ActionBar>` to reflect the app purpose.
 1. Remove the default `<ScrollView>` block and all its contents that come with the template.<br/>`<ScrollView>` components are top-level layout containers for scrollable content.
 1. Drag and drop the `<TabView>` component in its place.<br/>The Playground applies some code formatting, including taking care of indentation. However, the formatting is applied after the insertion and using the browser's undo feature only reverts the formatting and not the insertion of code.
-1. Configure the height of the `<TabView>` to fill the screen (set it to 100%).
+1. Configure the height of the `<TabView>` to fill the screen (set it to 100%). <br/>For Android devices, consider adding the `androidTabsPosition` property and setting it to `bottom`. Otherwise, the tabs will appear at the top of the screen.
 1. Change the titles of the `<TabViewItem>` elements and their contents to reflect their purpose.<br/>At this point, text content for the tabs is shown in `<Label>` components with no styling and formatting. Apply the `textWrap="true"` property to the respective `<Label>` components to improve the visualization of the text.
 
 At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
@@ -150,7 +150,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
   <Page class="page">
     <ActionBar title="My Tasks" class="action-bar" />
     
-    <TabView height="100%">
+    <TabView height="100%" androidTabsPosition="bottom">
       <TabViewItem title="To Do">
         <Label text="This tab will list active tasks and will let users add new tasks." textWrap="true" />
       </TabViewItem>
@@ -213,9 +213,9 @@ Use a `<ListView>` to show tasks below the input field.
 1. Delete all `<Label>` components from the `<GridLayout>` block.
 1. Configure the `<StackLayout>`.
     * Remove background color.
-    * Set width and height.
+    * Set width and height both to `100%`.
 1. Configure the `<GridLayout>`.
-    * Set the grid to consist of two columns and one row.
+    * Set the grid to consist of two columns and one row, with the width of the first column set to twice that of the second.
     * Set the width of the grid to 100% so that it takes the entire width of the screen.
     * Set the height of the grid to 25%. Otherwise, the `<ListView>` you'll be adding later might overlap the `<GridLayout>`.
     * Remove any additional settings for the grid.
@@ -233,6 +233,7 @@ Use a `<ListView>` to show tasks below the input field.
     * Replace the `countries`-related binding with a binding to your array of active tasks.
     * In the `<script>` block, remove the array of countries and create an empty array for your active tasks.
 1. In the `<scripts>` block, tie some logic to the tapping of the button.
+    * Check if the input is an empty string.
     * Log newly added tasks in the console.
     * Add newly added tasks into the array of active tasks. Use `unshift` to place new items at the top of the page.
     * Clear the text field after input.
@@ -245,7 +246,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
   <Page class="page">
     <ActionBar title="My Tasks" class="action-bar" />
 
-    <TabView height="100%">
+    <TabView height="100%" androidTabsPosition="bottom">
       <TabViewItem title="To Do">
         <!-- Positions an input field, a button, and the list of tasks in a vertical stack. -->
         <StackLayout orientation="vertical" width="100%" height="100%">
@@ -259,7 +260,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
 
           <ListView class="list-group" for="todo in todos" @itemTap="onItemTap" style="height:75%">
             <v-template>
-              <Label :text="todo.name" class="list-group-item-heading" />
+              <Label :text="todo.name" class="list-group-item-heading" textWrap="true" />
             </v-template>
           </ListView>
         </StackLayout>
@@ -279,6 +280,7 @@ export default {
     },
 
     onButtonTap() {
+      if (this.textFieldValue === "") return; // Prevents users from entering an empty string.
       console.log("New task added: " + this.textFieldValue + "."); // Logs the newly added task in the console for debugging.
       this.todos.unshift({ name: this.textFieldValue }); // Adds tasks in the ToDo array. Newly added tasks are immediately shown on the screen.
       this.textFieldValue = ""; // Clears the text field so that users can start adding new tasks immediately.
@@ -333,7 +335,7 @@ Out-of-the-box, the `<ListView>` component detects a tap gesture for every item 
   ```HTML
   <ListView class="list-group" for="done in dones" @itemTap="onDoneTap" style="height:75%">
     <v-template>
-      <Label :text="done.name" class="list-group-item-heading" />
+      <Label :text="done.name" class="list-group-item-heading" textWrap="true" />
     </v-template>
   </ListView>
   ```
@@ -369,7 +371,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
   <Page class="page">
     <ActionBar title="My Tasks" class="action-bar" />
 
-    <TabView height="100%">
+    <TabView height="100%" androidTabsPosition="bottom">
       <TabViewItem title="To Do">
         <!-- Positions an input field, a button, and the list of tasks in a vertical stack. -->
         <StackLayout orientation="vertical" width="100%" height="100%">
@@ -382,15 +384,15 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
 
           <ListView class="list-group" for="todo in todos" @itemTap="onItemTap" style="height:75%">
             <v-template>
-              <Label :text="todo.name" class="list-group-item-heading" />
+              <Label :text="todo.name" class="list-group-item-heading" textWrap="true" />
             </v-template>
           </ListView>
         </StackLayout>
       </TabViewItem>
       <TabViewItem title="Completed">
-        <ListView class="list-group" for="done in dones" @itemTap="onItemTap" style="height:75%">
+        <ListView class="list-group" for="done in dones" @itemTap="onDoneTap" style="height:75%">
           <v-template>
-            <Label :text="done.name" class="list-group-item-heading" />
+            <Label :text="done.name" class="list-group-item-heading" textWrap="true" />
           </v-template>
         </ListView>
       </TabViewItem>
@@ -420,6 +422,7 @@ export default {
     },
 
     onButtonTap() {
+      if (this.textFieldValue === "") return; // Prevents users from entering an empty string.
       console.log("New task added: " + this.textFieldValue + "."); // Logs the newly added task in the console for debugging.
       this.todos.unshift({
           name: this.textFieldValue
@@ -500,7 +503,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
   <Page class="page">
     <ActionBar title="My Tasks" class="action-bar" />
 
-    <TabView height="100%">
+    <TabView height="100%" androidTabsPosition="bottom">
       <TabViewItem title="To Do">
         <!-- Positions an input field, a button, and the list of tasks in a vertical stack. -->
         <StackLayout orientation="vertical" width="100%" height="100%">
@@ -513,7 +516,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
 
           <ListView class="list-group" for="todo in todos" @itemTap="onItemTap" style="height:75%">
             <v-template>
-              <Label :text="todo.name" class="list-group-item-heading" />
+              <Label :text="todo.name" class="list-group-item-heading" textWrap="true" />
             </v-template>
           </ListView>
         </StackLayout>
@@ -521,7 +524,7 @@ At the end of this stage, your `<HelloWorld.vue>` should resemble this sample:
       <TabViewItem title="Completed">
         <ListView class="list-group" for="done in dones" @itemTap="onDoneTap" style="height:75%">
           <v-template>
-            <Label :text="done.name" class="list-group-item-heading" />
+            <Label :text="done.name" class="list-group-item-heading" textWrap="true" />
           </v-template>
         </ListView>
       </TabViewItem>
@@ -569,6 +572,7 @@ export default {
     },
 
     onButtonTap() {
+      if (this.textFieldValue === "") return; // Prevents users from entering an empty string.
       console.log("New task added: " + this.textFieldValue + "."); // Logs the newly added task in the console for debugging.
       this.todos.unshift({
         name: this.textFieldValue
@@ -675,7 +679,7 @@ Here's how your app will look at the start and at the end of this section.
 In `HelloWorld.vue`, add the `selectedTabTextColor` and `tabTextFontSize` property to the `<TabView>`.
 
 ```HTML
-<TabView height="100%" selectedTabTextColor="#53ba82" tabTextFontSize="15" >
+<TabView height="100%" androidTabsPosition="bottom" selectedTabTextColor="#53ba82" tabTextFontSize="15" >
 ```
 
 #### Transform text
@@ -709,7 +713,7 @@ To implement a style particularly for the text of active tasks, you can set an `
 1. Set an `id` for the `<Label>` that represents active tasks and enable text wrapping. Enabling text wrapping ensures that longer text shows properly in your list
 
   ```HTML
-  <Label id="active-task" :text="todo.name" class="list-group-item-heading" />
+  <Label id="active-task" :text="todo.name" class="list-group-item-heading" textWrap="true" />
   ```
 1. Add the `separatorColor` property and set it to `transparent` for the `<ListView>` that shows active tasks. This way, the separator will no longer appear in your list.
 
@@ -746,12 +750,12 @@ This section applies the basic NativeScript knowledge from [Advanced design: Sty
 1. Set an `id` for the `<Label>` that represents completed tasks and enable text wrapping. Enabling text wrapping ensures that longer text shows properly in your list
 
   ```HTML
-  <Label id="completed-task" :text="done.name" class="list-group-item-heading" />
+  <Label id="completed-task" :text="done.name" class="list-group-item-heading" textWrap="true" />
   ```
 1. Add the `separatorColor` property, and set it to `transparent` for the `<ListView>` that represents completed tasks. This way, the separator will no longer appear in your list.
 
   ```HTML
-  <ListView id="completed-list" class="list-group" for="done in dones" @itemTap="onDoneTap" style="height:75%" separatorColor="transparent">
+  <ListView class="list-group" for="done in dones" @itemTap="onDoneTap" style="height:75%" separatorColor="transparent">
   ```
 
 1. In `<style scoped>`, create the style for completed tasks. Set font size, color, text decoration, and some padding to position the text on the page. Play with margins and paddings until you get a result that works for you.
